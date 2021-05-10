@@ -32,6 +32,7 @@ class FundAccountController extends Controller
      */
     public function store(Request $request)
     {
+        DB::commit();
         //validate request
         $validatedData = $this->validate($request, [
             "card_number"=>"required",
@@ -65,33 +66,33 @@ class FundAccountController extends Controller
         ]);
 
         $response = json_decode($fund->body());
-        // if($response->meta->authorization->mode){
+        if($response->meta->authorization->mode){
 
-            // // $authorization = $this->validate($request, [
-            // //     "city"=>"required",
-            // //     "address"=>"required",
-            // //     "state"=>"required",
-            // //     "country"=>"required",
-            // //     "zipcode"=>"required"
-            // // ]);
-            // // $authorization["mode"] = "avs_noauth";
+            $authorization = $this->validate($request, [
+                "city"=>"required",
+                "address"=>"required",
+                "state"=>"required",
+                "country"=>"required",
+                "zipcode"=>"required"
+            ]);
+            $authorization["mode"] = "avs_noauth";
             
-            // // $requestData["authorization"] = $authorization;
+            $requestData["authorization"] = $authorization;
 
-            // // $fund = $this->fetchData($request, $requestData);
+            $fund = $this->fetchData($request, $requestData);
 
-            // // $res = $fund;
-            // // $flw_ref_code = $res->data->flw_ref;
+            $res = $fund;
+            $flw_ref_code = $res->data->flw_ref;
 
-            // // $verify_transfer = Http::withToken("FLWSECK_TEST-f859716814edee16f9be7c42eb9aa6d2-X")->post("https://api.flutterwave.com/v3/validate-charge", [
-            // //     "otp"=>12345,
-            // //     "flw_ref"=>$flw_ref_code,
-            // //     "type"=>"card"
-            // // ]);
+            $verify_transfer = Http::withToken("FLWSECK_TEST-f859716814edee16f9be7c42eb9aa6d2-X")->post("https://api.flutterwave.com/v3/validate-charge", [
+                "otp"=>12345,
+                "flw_ref"=>$flw_ref_code,
+                "type"=>"card"
+            ]);
 
-            // return response()->json(json_decode($verify_transfer->body()));
+            return response()->json(json_decode($verify_transfer->body()));
 
-        // }
+        }
         return $response;
     }
 
