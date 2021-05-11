@@ -35,7 +35,7 @@ Route::post("/auth/login", [LoginController::class, 'userLogin']);
 //group all route in the middleware
 Route::middleware(['auth:api'])->group(function () {
     // crud route for creating an account
-    Route::apiResource("/generate_account", AccountController::class);
+    // Route::apiResource("/generate_account", AccountController::class);
     
     //crud route for Funding account
     Route::apiResource("/fund-account", FundAccountController::class);

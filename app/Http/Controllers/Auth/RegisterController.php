@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth;
 
+use DB;
 use App\Models\User;
 use Illuminate\Support\Facades\Http;
 
@@ -22,33 +23,40 @@ class RegisterController extends Controller
     }
 
     public function store(Request $request){
-        // $todos = Http::post('https://localhost:8000/api/generate_account');
+        DB::beginTransaction();
+        
+        try {
 
-        // return response()->json(["msg"=>json_decode($todos->body())]);
-
-        //validate request coming in from user
-        $validatedData = $this->validate($request, [
-            "name"=>"required|max:255",
-            "email"=>"required|email|max:255",
-            "phone_number"=>"required|max:50",
-            "password"=>"required|confirmed",
-            "password_confirmation"=>"required"
-        ]);
-
-        // hash password before storing it into database
-        $validatedData["password"] = Hash::make($request->password);
-
-        //store the user into the database
-        $user = User::create($validatedData);
-
-        //generate token for user login
-        $token = $user->createToken('authToken')->accessToken;
-
-        if($user){
+            //validate request coming in from user
+            $validatedData = $this->validate($request, [
+                "name"=>"required|max:255",
+                "email"=>"required|email|max:255",
+                "phone_number"=>"required|max:50",
+                "password"=>"required|confirmed",
+                "password_confirmation"=>"required"
+            ]);
+    
+            // hash password before storing it into database
+            $validatedData["password"] = Hash::make($request->password);
+    
+            //store the user into the database
+            $user = User::create($validatedData);
+    
+            //generate token for user login
+            $token = $user->createToken('authToken')->accessToken;
+    
             AccountController::store($user);
-        }
-        return response()->json(["user"=>$user, "token"=>$token]);
 
+        } catch (ValidationException $e) {
+            DB::rollback();
+        }catch(\Exception $e){
+            DB::rollback();
+
+            throw $e;
+        }
+
+        DB::commit();
+        return response()->json(["user"=>$user, "token"=>$token]);
 
     }
 }

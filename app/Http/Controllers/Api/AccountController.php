@@ -41,7 +41,7 @@ class AccountController extends Controller
             "bvn"=>"",
             "user_id"=>$request->id
         ]);
-        return response()->json(["msg"=>$request->name]);
+        // return response()->json(["msg"=>$request->name]);
     }
 
     /**
