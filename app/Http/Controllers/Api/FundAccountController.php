@@ -32,7 +32,6 @@ class FundAccountController extends Controller
      */
     public function store(Request $request)
     {
-        DB::commit();
         //validate request
         $validatedData = $this->validate($request, [
             "card_number"=>"required",
@@ -84,7 +83,7 @@ class FundAccountController extends Controller
             $res = $fund;
             $flw_ref_code = $res->data->flw_ref;
 
-            $verify_transfer = Http::withToken("FLWSECK_TEST-f859716814edee16f9be7c42eb9aa6d2-X")->post("https://api.flutterwave.com/v3/validate-charge", [
+            $verify_transfer = Http::withToken($flw_key)->post("https://api.flutterwave.com/v3/validate-charge", [
                 "otp"=>12345,
                 "flw_ref"=>$flw_ref_code,
                 "type"=>"card"
