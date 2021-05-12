@@ -62,7 +62,7 @@ class FundAccountController extends Controller
         $flw_key = config('app.flw_key');
         $data_encrypted = $this->encrytData(json_encode($requestData), $flw_encrypt_key);
 
-        $fund = Http::withToken($flw_key)->post($pURL, [
+        $fund = Http::withToken($flw_key)->post($this->pURL, [
             "client"=>$data_encrypted
         ]);
 
