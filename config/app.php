@@ -16,6 +16,7 @@ return [
     'name' => env('APP_NAME', 'Laravel'),
     'flw_encrypt_key' => env('FLUTTERWAVE_ENCRYPTION_KEY'),
     'flw_key' => env('FLUTTERWAVE_KEY'),
+    'flw_callback_url' => env('FLUTTERWAVE_CALLBACK_URL'),
 
     /*
     |--------------------------------------------------------------------------

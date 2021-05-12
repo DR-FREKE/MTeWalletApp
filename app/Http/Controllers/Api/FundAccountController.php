@@ -13,6 +13,7 @@ use App\Models\AccountSetup;
 
 class FundAccountController extends Controller
 {
+    public $pURL = "https://api.flutterwave.com/v3/charges?type=card";
     /**
      * Display a listing of the resource.
      *
@@ -32,6 +33,7 @@ class FundAccountController extends Controller
      */
     public function store(Request $request)
     {
+        $get_callback_url = config('app.flw_callback_url');
         //validate request
         $validatedData = $this->validate($request, [
             "card_number"=>"required",
@@ -43,7 +45,7 @@ class FundAccountController extends Controller
         ]);
 
         $validatedData["tx_ref"] = "TR_456fgj566yyy8";
-        $validatedData["redirect_url"] = "https://webhook.site/59eecff9-11ea-46aa-8201-734e4ed692bf";
+        $validatedData["redirect_url"] = $get_callback_url;
         $validatedData["type"] = "card";
         $validatedData["email"] = $request->user()->email;
 
@@ -60,7 +62,7 @@ class FundAccountController extends Controller
         $flw_key = config('app.flw_key');
         $data_encrypted = $this->encrytData(json_encode($requestData), $flw_encrypt_key);
 
-        $fund = Http::withToken($flw_key)->post("https://api.flutterwave.com/v3/charges?type=card", [
+        $fund = Http::withToken($flw_key)->post($pURL, [
             "client"=>$data_encrypted
         ]);
 
